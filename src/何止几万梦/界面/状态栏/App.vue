@@ -1,6 +1,23 @@
 <template>
   <main class="status-card">
-    <StatusHeader :world="data.世界" :relation="data.关系" />
+    <StatusHeader
+      :world="data.世界"
+      :relation="data.关系"
+      :profile-status="profileData._玩家设定.状态"
+      @edit-profile="showProfileEditor = !showProfileEditor"
+    />
+
+    <section v-if="showProfileEditor" class="profile-drawer" aria-label="玩家档案编辑器">
+      <ProfileForm
+        :profile="profileData._玩家设定.档案"
+        :status="profileData._玩家设定.状态"
+        :allow-skip="false"
+        compact
+        @save="saveProfile"
+        @cancel="showProfileEditor = false"
+      />
+    </section>
+
     <TabNav v-model="activeTab" />
 
     <section
@@ -32,6 +49,8 @@ import MusicPanel from './components/MusicPanel.vue';
 import RelationPanel from './components/RelationPanel.vue';
 import StatusHeader from './components/StatusHeader.vue';
 import TabNav from './components/TabNav.vue';
+import ProfileForm from '../玩家档案/ProfileForm.vue';
+import { useLatestDataStore } from '../玩家档案/store';
 import { useDataStore } from './store';
 
 const props = defineProps<{
@@ -39,8 +58,17 @@ const props = defineProps<{
 }>();
 
 const store = props.previewData ? undefined : useDataStore();
-const data = computed(() => props.previewData ?? store!.data);
+const latestStore = props.previewData ? undefined : useLatestDataStore();
+const previewState = props.previewData ? ref(_.cloneDeep(props.previewData)) : undefined;
+const data = computed(() => previewState?.value ?? store!.data);
+const profileData = computed(() => previewState?.value ?? latestStore!.data);
 const activeTab = useLocalStorage('hezhi-wanmeng:status-tab', 'relation');
+const showProfileEditor = ref(false);
+
+function saveProfile(archive: Record<string, string>) {
+  profileData.value._玩家设定 = { 状态: '已填写', 档案: archive };
+  showProfileEditor.value = false;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -57,6 +85,16 @@ const activeTab = useLocalStorage('hezhi-wanmeng:status-tab', 'relation');
   padding: 15px;
   outline: none;
   animation: lcdPageIn 230ms ease-out both;
+}
+
+.profile-drawer {
+  padding: 10px;
+  border-bottom: 1px solid var(--line-strong);
+  background: var(--accent-primary-soft);
+}
+
+.profile-drawer :deep(.profile-form) {
+  box-shadow: none;
 }
 
 .panel-shell:focus-visible {
@@ -97,6 +135,10 @@ const activeTab = useLocalStorage('hezhi-wanmeng:status-tab', 'relation');
 
   .panel-shell {
     padding: 12px 10px;
+  }
+
+  .profile-drawer {
+    padding: 7px;
   }
 
   .status-footer {

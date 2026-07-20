@@ -1,6 +1,10 @@
 import type { Schema as StatusData } from '../../schema';
 
 export const previewData: StatusData = {
+  _玩家设定: {
+    状态: '未填写',
+    档案: {},
+  },
   世界: {
     日期: '2010-09-11',
     时间段: '上午近十一点',

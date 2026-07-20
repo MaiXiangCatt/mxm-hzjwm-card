@@ -6,7 +6,13 @@
         <span>小鸢尾校园网络</span>
         <span class="brand-path">/ HLCU · 鹤林</span>
       </div>
-      <div class="connection"><span class="connection-dot" aria-hidden="true"></span>在线</div>
+      <div class="title-actions">
+        <button type="button" class="profile-button" @click="$emit('edit-profile')">
+          <span class="profile-dot" :class="{ ready: profileStatus === '已填写' }" aria-hidden="true"></span>
+          玩家档案
+        </button>
+        <div class="connection"><span class="connection-dot" aria-hidden="true"></span>在线</div>
+      </div>
     </div>
 
     <div class="summary-grid">
@@ -37,6 +43,11 @@ import type { Schema as StatusData } from '../../../schema';
 const props = defineProps<{
   world: StatusData['世界'];
   relation: StatusData['关系'];
+  profileStatus: StatusData['_玩家设定']['状态'];
+}>();
+
+defineEmits<{
+  'edit-profile': [];
 }>();
 
 const locationTitle = computed(() => {
@@ -63,10 +74,47 @@ const locationTitle = computed(() => {
 }
 
 .brand,
-.connection {
+.connection,
+.title-actions {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.title-actions {
+  flex: none;
+  gap: 9px;
+}
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 2px 7px;
+  border: 1px solid rgba(248, 247, 242, 0.4);
+  background: rgba(248, 247, 242, 0.08);
+  color: var(--surface-paper);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7rem;
+}
+
+.profile-button:focus-visible {
+  outline: 2px solid #bce0d8;
+  outline-offset: 2px;
+}
+
+.profile-dot {
+  width: 6px;
+  height: 6px;
+  border: 1px solid #d8cadf;
+  background: transparent;
+}
+
+.profile-dot.ready {
+  border-color: #bce0d8;
+  background: var(--accent-signal);
 }
 
 .brand-mark {
@@ -168,6 +216,10 @@ const locationTitle = computed(() => {
   }
 
   .brand-path {
+    display: none;
+  }
+
+  .connection {
     display: none;
   }
 }

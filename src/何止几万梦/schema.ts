@@ -1,4 +1,10 @@
 export const Schema = z.object({
+  _玩家设定: z
+    .object({
+      状态: z.enum(['未填写', '已填写', '已跳过']).prefault('未填写'),
+      档案: z.record(z.string().describe('玩家设定字段'), z.string()).prefault({}),
+    })
+    .prefault({}),
   世界: z
     .object({
       日期: z.string().prefault('2010-09-11'),
